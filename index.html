@@ -1,192 +1,260 @@
-// 🎓 IGNITE VOCABULARY DATABASE (EXPANDED EDITION)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hannah's Ignite Vocab (Easy Mode) 🚀</title>
+    <style>
+        :root {
+            --primary: #4361ee; /* Blue for Easy Mode */
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --text: #333;
+            --white: #ffffff;
+            --success: #28a745;
+            --error: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            color: var(--text);
+        }
+
+        .container {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 { color: var(--primary); margin-bottom: 10px; }
+        .subtitle { color: #666; margin-bottom: 30px; font-weight: bold; }
+
+        .score-board {
+            position: absolute; top: 20px; right: 20px;
+            font-weight: bold; color: var(--primary);
+            background: #f0f4ff; padding: 5px 15px; border-radius: 15px;
+        }
+
+        .question-card {
+            background: #f8f9fa; border-radius: 15px;
+            padding: 25px; margin-bottom: 25px;
+            border-left: 5px solid var(--accent);
+        }
+
+        .sentence { font-size: 1.3rem; line-height: 1.6; margin-bottom: 15px; }
+        .highlight {
+            background-color: #e0f7fa; padding: 2px 5px;
+            border-radius: 4px; border-bottom: 2px solid var(--accent);
+            color: #0077b6; font-weight: bold;
+        }
+
+        .options-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+        }
+
+        button.option-btn {
+            background: var(--white); border: 2px solid #e0e0e0;
+            border-radius: 12px; padding: 15px; font-size: 1.1rem;
+            cursor: pointer; transition: all 0.2s; color: var(--text); font-weight: 600;
+        }
+        button.option-btn:hover {
+            border-color: var(--primary); background: #f0f4ff; transform: translateY(-2px);
+        }
+        button.option-btn.correct {
+            background: var(--success); color: white; border-color: var(--success);
+        }
+        button.option-btn.wrong {
+            background: var(--error); color: white; border-color: var(--error);
+        }
+
+        .feedback { margin-top: 20px; font-weight: bold; min-height: 1.5em; font-size: 1.1rem; }
+
+        .next-btn {
+            background: var(--primary); color: white; border: none;
+            padding: 12px 30px; border-radius: 25px; font-size: 1.1rem;
+            cursor: pointer; margin-top: 20px; display: none;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .progress-container {
+            width: 100%; height: 10px; background: #e0e0e0;
+            border-radius: 5px; margin-top: 20px; overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%; background: var(--success); width: 0%; transition: width 0.3s ease;
+        }
+
+        @media (max-width: 500px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="score-board">Score: <span id="score">0</span></div>
+        
+        <h1>Ignite Vocab (Easy) 🚀</h1>
+        <p class="subtitle">Select the Power Word!</p>
+
+        <div id="game-area">
+            <div class="question-card">
+                <div class="sentence" id="sentence-display">Loading...</div>
+                <div style="font-size: 0.9rem; color: #666;">Choose the best replacement:</div>
+            </div>
+
+            <div class="options-grid" id="options-container"></div>
+
+            <div class="feedback" id="feedback"></div>
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question ➡️</button>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        // 🎓 IGNITE VOCABULARY DATABASE (4-CHOICE VERSION)
         const questions = [
-            // --- LEVEL 1: THE BASICS (VERBS) ---
-            {
-                sentence: "Lying is <span class='highlight'>bad</span> for your friendships.",
-                answer: "Detrimental",
-                options: ["Detrimental", "Unpleasant", "Annoying", "Sad"],
-                note: "💡 'Detrimental' means causing harm or damage."
-            },
-            {
-                sentence: "This graph <span class='highlight'>shows</span> that temperatures are rising.",
-                answer: "Demonstrates",
-                options: ["Demonstrates", "Looks", "Sees", "Guesses"],
-                note: "💡 'Demonstrate' is a scientific way to say 'show'."
-            },
-            {
-                sentence: "Pollution is a <span class='highlight'>big</span> problem.",
-                answer: "Significant",
-                options: ["Significant", "Fat", "Large", "Heavy"],
-                note: "💡 Use 'Significant' for problems, changes, or events."
-            },
-            {
-                sentence: "The internet has <span class='highlight'>changed</span> our lives.",
-                answer: "Transformed",
-                options: ["Transformed", "Moved", "Swapped", "Fixed"],
-                note: "💡 'Transform' means a complete, dramatic change."
-            },
-            {
-                sentence: "It is <span class='highlight'>good</span> to eat vegetables.",
-                answer: "Beneficial",
-                options: ["Beneficial", "Nice", "Cool", "Fun"],
-                note: "💡 'Beneficial' means it gives you a benefit (good result)."
-            },
-            
-            // --- LEVEL 2: PERSUASIVE POWER (OPINIONS) ---
-            {
-                sentence: "Honesty is <span class='highlight'>important</span> for trust.",
-                answer: "Crucial",
-                options: ["Crucial", "Okay", "Simple", "Easy"],
-                note: "💡 'Crucial' means extremely important."
-            },
-            {
-                sentence: "Lies can <span class='highlight'>ruin</span> a reputation.",
-                answer: "Destroy",
-                options: ["Destroy", "Mess up", "Bump", "Hit"],
-                note: "💡 Stronger than 'ruin'. It sounds more serious."
-            },
-            {
-                sentence: "I <span class='highlight'>think</span> that children should vote.",
-                answer: "Believe",
-                options: ["Believe", "Guess", "Reckon", "Wonder"],
-                note: "💡 Never use 'I think' in an essay. Use 'I believe' or 'I contend'."
-            },
-            {
-                sentence: "We must <span class='highlight'>fix</span> this issue.",
-                answer: "Resolve",
-                options: ["Resolve", "Do", "Make", "Help"],
-                note: "💡 Leaders 'resolve' conflicts, they don't just 'fix' them."
-            },
-            {
-                sentence: "This is a <span class='highlight'>sad</span> situation.",
-                answer: "Devastating",
-                options: ["Devastating", "Bad", "Crying", "Blue"],
-                note: "💡 'Devastating' has high emotional impact."
-            },
+            // LEVEL 1: BASICS
+            { sentence: "Lying is <span class='highlight'>bad</span> for friendships.", answer: "Detrimental", options: ["Detrimental", "Unpleasant", "Annoying", "Sad"], note: "Means causing harm." },
+            { sentence: "This graph <span class='highlight'>shows</span> the rise.", answer: "Demonstrates", options: ["Demonstrates", "Looks", "Sees", "Guesses"], note: "Scientific word for show." },
+            { sentence: "Pollution is a <span class='highlight'>big</span> problem.", answer: "Significant", options: ["Significant", "Fat", "Large", "Heavy"], note: "Means sufficiently great." },
+            { sentence: "Technology has <span class='highlight'>changed</span> our lives.", answer: "Transformed", options: ["Transformed", "Moved", "Swapped", "Fixed"], note: "Means changed completely." },
+            { sentence: "Vegetables are <span class='highlight'>good</span> for you.", answer: "Beneficial", options: ["Beneficial", "Nice", "Cool", "Fun"], note: "Means having a good effect." },
 
-            // --- LEVEL 3: CONNECTIVES (LINKING WORDS) ---
-            {
-                sentence: "<span class='highlight'>Also</span>, we need to consider the cost.",
-                answer: "Furthermore",
-                options: ["Furthermore", "And", "Plus", "So"],
-                note: "💡 Start a new paragraph with 'Furthermore' instead of 'Also'."
-            },
-            {
-                sentence: "<span class='highlight'>So</span>, we should stop polluting.",
-                answer: "Consequently",
-                options: ["Consequently", "Then", "After", "But"],
-                note: "💡 'Consequently' shows a logical result (Cause & Effect)."
-            },
-            {
-                sentence: "<span class='highlight'>But</span>, some people disagree.",
-                answer: "However",
-                options: ["However", "No", "And", "So"],
-                note: "💡 'However' is the best way to introduce a counter-argument."
-            },
-            {
-                sentence: "<span class='highlight'>In the end</span>, honesty is best.",
-                answer: "Ultimately",
-                options: ["Ultimately", "Last", "Finish", "Done"],
-                note: "💡 'Ultimately' is perfect for your conclusion."
-            },
+            // LEVEL 2: OPINIONS
+            { sentence: "Honesty is <span class='highlight'>important</span>.", answer: "Crucial", options: ["Crucial", "Okay", "Simple", "Easy"], note: "Means decisive or critical." },
+            { sentence: "Lies can <span class='highlight'>ruin</span> trust.", answer: "Destroy", options: ["Destroy", "Mess up", "Bump", "Hit"], note: "Stronger than ruin." },
+            { sentence: "I <span class='highlight'>think</span> it is true.", answer: "Believe", options: ["Believe", "Guess", "Reckon", "Wonder"], note: "Use 'I believe' in essays." },
+            { sentence: "We must <span class='highlight'>fix</span> the issue.", answer: "Resolve", options: ["Resolve", "Do", "Make", "Help"], note: "Find a solution." },
+            { sentence: "It was a <span class='highlight'>sad</span> event.", answer: "Devastating", options: ["Devastating", "Bad", "Crying", "Blue"], note: "Highly damaging." },
 
-            // --- LEVEL 4: ADJECTIVES (DESCRIPTION) ---
-            {
-                sentence: "The view was <span class='highlight'>beautiful</span>.",
-                answer: "Breathtaking",
-                options: ["Breathtaking", "Pretty", "Nice", "Good"],
-                note: "💡 Make the reader feel something! 'Breathtaking' is powerful."
-            },
-            {
-                sentence: "The room was <span class='highlight'>dirty</span>.",
-                answer: "Filthy",
-                options: ["Filthy", "Not clean", "Yucky", "Bad"],
-                note: "💡 'Filthy' means extremely dirty."
-            },
-            {
-                sentence: "He was <span class='highlight'>scared</span> of the dark.",
-                answer: "Terrified",
-                options: ["Terrified", "Spooked", "Worried", "Sad"],
-                note: "💡 'Terrified' implies intense fear."
-            },
-            {
-                sentence: "The test was <span class='highlight'>hard</span>.",
-                answer: "Challenging",
-                options: ["Challenging", "Heavy", "Strong", "Big"],
-                note: "💡 'Challenging' sounds more academic than 'hard'."
-            },
-            {
-                sentence: "She was <span class='highlight'>happy</span> with the result.",
-                answer: "Delighted",
-                options: ["Delighted", "Good", "Okay", "Fine"],
-                note: "💡 'Delighted' shows great pleasure."
-            },
-            {
-                sentence: "It is <span class='highlight'>clear</span> that he is lying.",
-                answer: "Evident",
-                options: ["Evident", "See through", "Bright", "Light"],
-                note: "💡 'It is evident that...' is a great sentence starter."
-            },
+            // LEVEL 3: CONNECTIVES
+            { sentence: "<span class='highlight'>Also</span>, we must consider...", answer: "Furthermore", options: ["Furthermore", "And", "Plus", "So"], note: "Start a new paragraph with this." },
+            { sentence: "<span class='highlight'>So</span>, we should stop.", answer: "Consequently", options: ["Consequently", "Then", "After", "But"], note: "Shows cause and effect." },
+            { sentence: "<span class='highlight'>But</span>, I disagree.", answer: "However", options: ["However", "No", "And", "So"], note: "Best counter-argument word." },
+            { sentence: "<span class='highlight'>In the end</span>, honesty is best.", answer: "Ultimately", options: ["Ultimately", "Last", "Finish", "Done"], note: "Perfect for conclusions." },
 
-            // --- LEVEL 5: IGNITE MASTER (ADVANCED) ---
-            {
-                sentence: "We need to <span class='highlight'>stop</span> bullying.",
-                answer: "Eliminate",
-                options: ["Eliminate", "End", "Finish", "Close"],
-                note: "💡 'Eliminate' means to completely remove."
-            },
-            {
-                sentence: "This idea is <span class='highlight'>everywhere</span>.",
-                answer: "Widespread",
-                options: ["Widespread", "All over", "Big", "Long"],
-                note: "💡 Used for global issues like 'widespread poverty'."
-            },
-            {
-                sentence: "It is <span class='highlight'>necessary</span> to act now.",
-                answer: "Imperative",
-                options: ["Imperative", "Good", "Okay", "Must"],
-                note: "💡 'It is imperative' is a very strong command."
-            },
-            {
-                sentence: "Lying <span class='highlight'>makes worse</span> the problem.",
-                answer: "Exacerbates",
-                options: ["Exacerbates", "Grows", "Adds", "Bads"],
-                note: "💡 'Exacerbate' is a high-level word for 'make worse'."
-            },
-            {
-                sentence: "He <span class='highlight'>gave</span> a good reason.",
-                answer: "Provided",
-                options: ["Provided", "Said", "Told", "Did"],
-                note: "💡 In essays, you 'provide' examples, not 'give' them."
-            },
-            {
-                sentence: "This <span class='highlight'>makes</span> me think of...",
-                answer: "Reminds",
-                options: ["Reminds", "Thinks", "Gets", "Puts"],
-                note: "💡 'Reminds me of' connects ideas."
-            },
-            {
-                sentence: "The main <span class='highlight'>part</span> of the story...",
-                answer: "Element",
-                options: ["Element", "Bit", "Piece", "Chunk"],
-                note: "💡 Use 'element' or 'aspect' instead of 'part'."
-            },
-            {
-                sentence: "We should <span class='highlight'>look at</span> the evidence.",
-                answer: "Examine",
-                options: ["Examine", "See", "Watch", "Check"],
-                note: "💡 Scholars 'examine' or 'analyse' facts."
-            },
-            {
-                sentence: "There are many <span class='highlight'>different</span> opinions.",
-                answer: "Diverse",
-                options: ["Diverse", "Lots", "Mixed", "Many"],
-                note: "💡 'Diverse' means showing a great deal of variety."
-            },
-            {
-                sentence: "The solution is <span class='highlight'>possible</span>.",
-                answer: "Viable",
-                options: ["Viable", "Can do", "Able", "Okay"],
-                note: "💡 'Viable' means it can work successfully."
-            }
+            // LEVEL 4: ADJECTIVES
+            { sentence: "The view was <span class='highlight'>beautiful</span>.", answer: "Breathtaking", options: ["Breathtaking", "Pretty", "Nice", "Good"], note: "Astonishing." },
+            { sentence: "The room was <span class='highlight'>dirty</span>.", answer: "Filthy", options: ["Filthy", "Messy", "Yucky", "Bad"], note: "Extremely dirty." },
+            { sentence: "He was <span class='highlight'>scared</span>.", answer: "Terrified", options: ["Terrified", "Spooked", "Worried", "Sad"], note: "Intense fear." },
+            { sentence: "The test was <span class='highlight'>hard</span>.", answer: "Challenging", options: ["Challenging", "Heavy", "Strong", "Big"], note: "Academic word for hard." },
+            { sentence: "She was <span class='highlight'>happy</span>.", answer: "Delighted", options: ["Delighted", "Good", "Okay", "Fine"], note: "Shows great pleasure." },
+            { sentence: "It is <span class='highlight'>clear</span> that...", answer: "Evident", options: ["Evident", "See through", "Bright", "Light"], note: "Plain or obvious." },
+
+            // LEVEL 5: ADVANCED
+            { sentence: "We need to <span class='highlight'>stop</span> bullying.", answer: "Eliminate", options: ["Eliminate", "End", "Finish", "Close"], note: "Completely remove." },
+            { sentence: "The problem is <span class='highlight'>everywhere</span>.", answer: "Widespread", options: ["Widespread", "All over", "Big", "Long"], note: "Found over a large area." },
+            { sentence: "It is <span class='highlight'>necessary</span>.", answer: "Imperative", options: ["Imperative", "Good", "Okay", "Must"], note: "Of vital importance." },
+            { sentence: "It makes it <span class='highlight'>worse</span>.", answer: "Exacerbates", options: ["Exacerbates", "Grows", "Adds", "Bads"], note: "To make a problem worse." },
+            { sentence: "He <span class='highlight'>gave</span> a reason.", answer: "Provided", options: ["Provided", "Said", "Told", "Did"], note: "Use 'provide' for examples." },
+            { sentence: "It <span class='highlight'>makes</span> me think of...", answer: "Reminds", options: ["Reminds", "Thinks", "Gets", "Puts"], note: "Connects ideas." },
+            { sentence: "The main <span class='highlight'>part</span>...", answer: "Element", options: ["Element", "Bit", "Piece", "Chunk"], note: "Or Aspect." },
+            { sentence: "We should <span class='highlight'>look at</span> it.", answer: "Examine", options: ["Examine", "See", "Watch", "Check"], note: "Inspect closely." },
+            { sentence: "Many <span class='highlight'>different</span> views.", answer: "Diverse", options: ["Diverse", "Lots", "Mixed", "Many"], note: "Showing variety." },
+            { sentence: "It is <span class='highlight'>possible</span>.", answer: "Viable", options: ["Viable", "Can do", "Able", "Okay"], note: "Capable of working." }
         ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let shuffledQuestions = [];
+
+        const sentenceDisplay = document.getElementById('sentence-display');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackDisplay = document.getElementById('feedback');
+        const nextBtn = document.getElementById('next-btn');
+        const scoreDisplay = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function initGame() {
+            shuffledQuestions = shuffle([...questions]);
+            currentQuestionIndex = 0;
+            score = 0;
+            scoreDisplay.innerText = score;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const currentQ = shuffledQuestions[currentQuestionIndex];
+            const progress = (currentQuestionIndex / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            sentenceDisplay.innerHTML = currentQ.sentence;
+            feedbackDisplay.innerHTML = "";
+            nextBtn.style.display = "none";
+            optionsContainer.innerHTML = "";
+
+            // Shuffle Options logic
+            const options = shuffle([...currentQ.options]);
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt, currentQ);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(btn, selected, currentQ) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selected === currentQ.answer) {
+                btn.classList.add('correct');
+                feedbackDisplay.innerHTML = `✅ Correct! <br><span style="font-size:0.9rem; font-weight:normal;">${currentQ.note}</span>`;
+                feedbackDisplay.style.color = "var(--success)";
+                score += 10;
+                scoreDisplay.innerText = score;
+            } else {
+                btn.classList.add('wrong');
+                allBtns.forEach(b => {
+                    if (b.innerText === currentQ.answer) b.classList.add('correct');
+                });
+                feedbackDisplay.innerHTML = `❌ Nice try! The best word is <b>${currentQ.answer}</b>.`;
+                feedbackDisplay.style.color = "var(--error)";
+            }
+
+            nextBtn.style.display = "inline-block";
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.innerText = "Finish! 🎉";
+                nextBtn.onclick = finishGame;
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function finishGame() {
+            document.querySelector('.container').innerHTML = `
+                <h1>🎉 Amazing Job! 🎉</h1>
+                <p>Your Final Score: <strong>${score} / ${questions.length * 10}</strong></p>
+                <button class="next-btn" style="display:inline-block" onclick="location.reload()">Play Again 🔄</button>
+            `;
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
